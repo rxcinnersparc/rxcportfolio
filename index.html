@@ -257,11 +257,12 @@
         // Kept separate from the internal page names so we can have
         // a public slug that differs from the hash / section id
         // (e.g. "/beyondthescreen" maps to the "beyond" section).
-        const ROUTABLE = ['home', 'about', 'projects', 'beyondthescreen', 'contact'];
+        const ROUTABLE = ['home', 'about', 'projects', 'beyondthescreen', 'contact', 'webapps'];
 
         // Public URL slug  →  internal page name
         //
         //   "beyondthescreen"  →  "beyond"   (section id is #beyond)
+        //   "webapps"          →  "webapps"  (the Web Apps grid)
         //
         // Any slug NOT in this map falls back to "home".
         const PATH_TO_PAGE = {
@@ -269,12 +270,14 @@
             'about':           'about',
             'projects':        'projects',
             'beyondthescreen': 'beyond',
-            'contact':         'contact'
+            'contact':         'contact',
+            'webapps':         'webapps'
         };
 
         // Internal page name  →  public URL slug
         //
         //   "beyond"  →  "beyondthescreen"
+        //   "webapps" →  "webapps"
         //
         // Anything not in this map falls back to "/".
         const PAGE_TO_PATH = {
@@ -282,8 +285,21 @@
             'about':    'about',
             'projects': 'projects',
             'beyond':   'beyondthescreen',
-            'contact':  'contact'
+            'contact':  'contact',
+            'webapps':  'webapps'
         };
+
+        // ------------------------------------------------------------
+        // Deep-link handling for the Web Apps section:
+        //
+        //   /projects/web-apps              → internal page "webapps"
+        //   /projects/web-apps/<slug>       → internal page "webapps-<slug>"
+        //
+        // The GAS app receives ?page=webapps-<slug> (or ?page=webapps
+        // for the grid) and routes internally. This mirrors the
+        // Pixie Bookhouse "?page=blogs-<slug>" pattern.
+        // ------------------------------------------------------------
+        const WEBAPPS_PREFIX = 'projects/web-apps';   // without leading slash
 
         const iframe = document.getElementById('gas-iframe');
 
