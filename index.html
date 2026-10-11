@@ -240,24 +240,55 @@
 
         const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyoKmFws-9LntbUzsCgjVBIABdv3vcULSMfuvT5eIUyj6I8IcZr4QktK2VVdNl24n-iHg/exec';
 
-        const ROUTABLE = ['home', 'about', 'projects', 'contact'];
+        // Public URL slugs that the wrapper recognizes. Kept separate
+        // from the internal page names so we can have a public slug
+        // that differs from the hash / section id (e.g.
+        // "/beyondthescreen" maps to the "beyond" section).
+        const ROUTABLE = ['home', 'about', 'projects', 'contact', 'beyondthescreen'];
+
+        // Public URL slug  →  internal page name
+        //
+        //   "beyondthescreen"  →  "beyond"   (section id is #beyond)
+        //
+        // Any slug NOT in this map falls back to "home".
+        const PATH_TO_PAGE = {
+            'home':            'home',
+            'about':           'about',
+            'projects':        'projects',
+            'contact':         'contact',
+            'beyondthescreen': 'beyond'
+        };
+
+        // Internal page name  →  public URL slug
+        //
+        //   "beyond"  →  "beyondthescreen"
+        //
+        // Anything not in this map falls back to "/".
+        const PAGE_TO_PATH = {
+            'home':     'home',
+            'about':    'about',
+            'projects': 'projects',
+            'contact':  'contact',
+            'beyond':   'beyondthescreen'
+        };
 
         const iframe = document.getElementById('gas-iframe');
 
         // ------------------------------------------------------------
         // Translate a public pathname into the GAS-internal page value.
         //
-        //   "/"           → "home"
-        //   "/about"      → "about"
-        //   "/projects"   → "projects"
-        //   "/contact"    → "contact"
-        //   "/anything"   → "home"  (unknown paths fall back)
+        //   "/"                 → "home"
+        //   "/about"            → "about"
+        //   "/projects"         → "projects"
+        //   "/contact"          → "contact"
+        //   "/beyondthescreen"  → "beyond"
+        //   "/anything"         → "home"  (unknown paths fall back)
         // ------------------------------------------------------------
         function pathnameToPage(pathname) {
             var p = (pathname || '/').replace(/^\/+|\/+$/g, '').toLowerCase();
             if (!p || p === 'index.html') return 'home';
             if (ROUTABLE.indexOf(p) === -1) return 'home';
-            return p;
+            return PATH_TO_PAGE[p] || 'home';
         }
 
         // ------------------------------------------------------------
@@ -267,12 +298,14 @@
         //   "about"    → "/about"
         //   "projects" → "/projects"
         //   "contact"  → "/contact"
+        //   "beyond"   → "/beyondthescreen"
         // ------------------------------------------------------------
         function pageToPathname(page) {
             var p = (page || '').toString().trim().toLowerCase();
             if (!p || p === 'home') return '/';
-            if (ROUTABLE.indexOf(p) === -1) return '/';
-            return '/' + p;
+            var slug = PAGE_TO_PATH[p];
+            if (!slug) return '/';
+            return '/' + slug;
         }
 
         // ------------------------------------------------------------
