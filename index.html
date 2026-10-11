@@ -316,6 +316,16 @@
         function pathnameToPage(pathname) {
             var p = (pathname || '/').replace(/^\/+|\/+$/g, '').toLowerCase();
             if (!p || p === 'index.html') return 'home';
+
+            // ---- Web Apps deep links ----
+            // "/projects/web-apps"           → "webapps"
+            // "/projects/web-apps/<slug>"    → "webapps-<slug>"
+            if (p === WEBAPPS_PREFIX) return 'webapps';
+            if (p.indexOf(WEBAPPS_PREFIX + '/') === 0) {
+                var slug = p.slice(WEBAPPS_PREFIX.length + 1);
+                if (slug) return 'webapps-' + slug;
+            }
+
             if (ROUTABLE.indexOf(p) === -1) return 'home';
             return PATH_TO_PAGE[p] || 'home';
         }
@@ -332,6 +342,18 @@
         function pageToPathname(page) {
             var p = (page || '').toString().trim().toLowerCase();
             if (!p || p === 'home') return '/';
+
+            // ---- Web Apps detail page ----
+            // "webapps-<slug>"  →  "/projects/web-apps/<slug>"
+            if (p.indexOf('webapps-') === 0) {
+                var webAppSlug = p.slice('webapps-'.length);
+                if (webAppSlug) return '/' + WEBAPPS_PREFIX + '/' + webAppSlug;
+                return '/' + WEBAPPS_PREFIX;
+            }
+
+            // ---- Web Apps grid ----
+            if (p === 'webapps') return '/' + WEBAPPS_PREFIX;
+
             var slug = PAGE_TO_PATH[p];
             if (!slug) return '/';
             return '/' + slug;
