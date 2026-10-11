@@ -240,11 +240,14 @@
 
         const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyoKmFws-9LntbUzsCgjVBIABdv3vcULSMfuvT5eIUyj6I8IcZr4QktK2VVdNl24n-iHg/exec';
 
-        // Public URL slugs that the wrapper recognizes. Kept separate
-        // from the internal page names so we can have a public slug
-        // that differs from the hash / section id (e.g.
-        // "/beyondthescreen" maps to the "beyond" section).
-        const ROUTABLE = ['home', 'about', 'projects', 'contact', 'beyondthescreen'];
+        // Public URL slugs that the wrapper recognizes. Order mirrors
+        // the physical order of sections in the GAS document:
+        //   #home → #about → #projects → #beyond → (#contact)
+        //
+        // Kept separate from the internal page names so we can have
+        // a public slug that differs from the hash / section id
+        // (e.g. "/beyondthescreen" maps to the "beyond" section).
+        const ROUTABLE = ['home', 'about', 'projects', 'beyondthescreen', 'contact'];
 
         // Public URL slug  →  internal page name
         //
@@ -255,8 +258,8 @@
             'home':            'home',
             'about':           'about',
             'projects':        'projects',
-            'contact':         'contact',
-            'beyondthescreen': 'beyond'
+            'beyondthescreen': 'beyond',
+            'contact':         'contact'
         };
 
         // Internal page name  →  public URL slug
@@ -268,8 +271,8 @@
             'home':     'home',
             'about':    'about',
             'projects': 'projects',
-            'contact':  'contact',
-            'beyond':   'beyondthescreen'
+            'beyond':   'beyondthescreen',
+            'contact':  'contact'
         };
 
         const iframe = document.getElementById('gas-iframe');
