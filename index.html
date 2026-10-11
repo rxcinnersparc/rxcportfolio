@@ -500,12 +500,31 @@
                     : pathnameToPage(window.location.pathname);
                 pendingPage = null;
 
-                try {
-                    iframe.contentWindow.postMessage(
-                        { type: 'portfolio:popstate', page: initial },
-                        '*'
-                    );
-                } catch (e) {}
+                // Relay through EVERY nested frame level.
+                //
+                // A single iframe.contentWindow.postMessage() only
+                // reaches the GAS host frame — the actual UI runs in
+                // a cross-origin sandboxed grandchild that the host
+                // does not relay to. Fanning out to all descendants
+                // is the only way to guarantee the message lands.
+                //
+                // (This mirrors the popstate handler below.)
+                function relayReady(win, depth) {
+                    if (!win || depth > 6) return;
+                    try {
+                        win.postMessage(
+                            { type: 'portfolio:popstate', page: initial },
+                            '*'
+                        );
+                    } catch (e) {}
+                    try {
+                        for (let i = 0; i < win.frames.length; i++) {
+                            relayReady(win.frames[i], depth + 1);
+                        }
+                    } catch (e) {}
+                }
+
+                relayReady(iframe.contentWindow, 0);
                 return;
             }
         });
